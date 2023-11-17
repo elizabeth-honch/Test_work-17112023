@@ -1,23 +1,20 @@
-import logo from './logo.svg';
+import React from 'react';
+import { HashRouter, BrowserRouter, Routes, Route } from 'react-router-dom';
+import { UserList } from './components/UserList/UserList.jsx';
+import { PostList } from './components/PostList/PostList.jsx';
+import { AlbumsList } from './components/AlbumsList/AlbumsList.jsx';
 import './App.css';
 
-function App() {
+const App = () => {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<UserList />} />
+          <Route path="/posts" element={<PostList />} />
+          <Route path="/albums" element={<AlbumsList />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

@@ -1,0 +1,99 @@
+.users {
+  &__title {
+    text-align: center;
+  }
+
+  &__search {
+    width: 400px;
+    height: 30px;
+    margin-bottom: 20px;
+    font-size: 16px;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+
+  &__sortBlock {
+    display: inline-block;
+    margin-left: 15px;
+
+    select {
+      width: 200px;
+      margin-left: 10px;
+      font-size: 16px;
+    }
+
+    @media (max-width: 768px) {
+      display: block;
+      margin: 0 0 20px 0;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 25px;
+
+    &_item {
+      padding: 10px;
+      box-shadow: 0 0 2px 1px rgba(22, 119, 255, 0.5);
+      @media (min-width: 1200px) {
+        width: 30.33%;
+      }
+      @media (min-width: 768px) and (max-width: 1200px) {
+        width: 45.8%;
+      }
+      @media (min-width: 320px) and (max-width: 768px) {
+        width: 100%;
+      }
+    }
+
+    &_name {
+      text-align: center;
+      font-weight: 600;
+    }
+
+    &_username {
+      color: #d47b7b;
+      border-bottom: 2px solid #d47b7b;
+    }
+
+    &_action {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      height: 30px;
+
+      a {
+        padding: 0 5px;
+        cursor: pointer;
+        text-decoration: none;
+        color: #fff;
+        line-height: 30px;
+        transition: all 0.5s;
+      }
+    }
+
+    &_actionPost {
+      background: #1677ff;
+      border: #1677ff;
+
+      &:hover, &:focus, &:active {
+        background: #1c63c7;
+        border: #1c63c7;
+      }
+    }
+
+    &_actionAlb {
+      background: #52c41a;
+      border: #52c41a;
+
+      &:hover, &:focus, &:active {
+        background: #0eab25;
+        border: #0eab25;
+      }
+    }
+  }
+}
