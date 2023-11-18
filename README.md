@@ -1,7 +1,5 @@
 # Test work ProxySeller
 
-Project - [DEMOLINK](https://elizabeth-honch.github.io/Test_work-17112023/)
-
 ## Available Scripts
 
 In the project directory, you can run:
