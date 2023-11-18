@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useQuery } from '@tanstack/react-query';
 import { fetchData } from "../../queryFn/useQuery";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, createSearchParams, useSearchParams } from "react-router-dom";
 import "./UserList.scss";
 
 export const UserList = () => {
   const [fitleredUsers, setFilteredUsers] = useState(null);
-  const [queryParam, setQueryParam] = useState(null);
-  const [sortParam, setSortParam] = useState('default');
+  const [searchValue, setSearchValue] = useState('');
+  const [sortValue, setSortValue] = useState('');
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  let queryParamObj = useRef({});
 
   const {
     data: users,
@@ -16,8 +19,6 @@ export const UserList = () => {
   } = useQuery({
     queryKey: ['/users'],
     queryFn: fetchData,
-    cacheTime: Infinity,
-    staleTime: Infinity,
   });
 
   useEffect(() => {
@@ -26,40 +27,69 @@ export const UserList = () => {
     }
   }, [isLoadingUsers, isErrorUsers, users]);
 
+  useEffect(() => {
+    const searchParamsUrl = Object.fromEntries([...searchParams]);
+    if (users) {
+      handleSearch(searchParamsUrl?.search || '');
+      handleSort(searchParamsUrl?.sort || '');
+    }
+  }, [searchParams, users]);
+
+  const sortData = (data, type) => {
+    if (type && type !== 'default') {
+      queryParamObj.current = {...queryParamObj.current, "sort": type};
+    } else {
+      const {sort, ...rest} = queryParamObj.current;
+      queryParamObj.current = rest;
+    }
+    navigate({search: `?${createSearchParams(queryParamObj.current)}`});
+    if (type === 'asc') {
+      return [...data].sort((prevUser, nextUser) => {
+        return prevUser.username.localeCompare(nextUser.username);
+      });
+    } else if (type === 'desc') {
+      return [...data].sort((prevUser, nextUser) => {
+        return nextUser.username.localeCompare(prevUser.username);
+      });
+    } else {
+      return data;
+    }
+  };
+
+  const searchData = (data, search) => {
+    if (search) {
+      queryParamObj.current = {...queryParamObj.current, "search": search};
+    } else {
+      const {search, ...rest} = queryParamObj.current;
+      queryParamObj.current = rest;
+    }
+    navigate({search: `?${createSearchParams(queryParamObj.current)}`});
+    return search && search.length > 0
+      ? data.filter(user => {
+        const lowerUsername = user.username.toLowerCase();
+        return lowerUsername.includes(search);
+      })
+      : data;
+  };
+
   const handleSearch = (event) => {
-    const value = (event.target.value).toLowerCase();
-    setQueryParam(value);
-    setFilteredUsers(prevFilteredUsers => {
-      if (value) {
-        return prevFilteredUsers.filter(user => {
-          const lowerUsername = user.username.toLowerCase();
-          return lowerUsername.includes(value);
-        });
-      } else {
-        return sortParam === 'default'
-          ? users
-          : handleSort(sortParam)
-      }
+    const value = typeof event === 'string' ? event : event.target.value;
+    setSearchValue(value);
+    setFilteredUsers(() => {
+      const sortedUsers = sortData(users, queryParamObj.current?.sort || 'default');
+      return searchData(sortedUsers, value.toLowerCase());
     });
   };
 
   const handleSort = (event) => {
     const value = typeof event === 'string' ? event : event.target.value;
-    setSortParam(value);
+    setSortValue(value);
     setFilteredUsers(prevFilteredUsers => {
       const usersData = prevFilteredUsers ? prevFilteredUsers : users;
-      if (value === 'asc') {
-        return [...usersData].sort((prevUser, nextUser) => {
-          return prevUser.username.localeCompare(nextUser.username);
-        });
-      } else if (value === 'desc') {
-        return [...usersData].sort((prevUser, nextUser) => {
-          return nextUser.username.localeCompare(prevUser.username);
-        });
+      if (value === 'default') {
+        return searchData(users, queryParamObj.current?.search || '');
       } else {
-        return queryParam && queryParam.length > 0
-          ? users.filter(user => user.username.toLowerCase().includes(queryParam))
-          : users;
+        return sortData(usersData, value);
       }
     });
   };
@@ -72,11 +102,12 @@ export const UserList = () => {
         placeholder="Search by Username"
         className="users__search"
         onChange={handleSearch}
+        value={searchValue}
       />
 
       <div className="users__sortBlock">
         <span>Sort By:</span>
-        <select onChange={handleSort}>
+        <select onChange={handleSort} value={sortValue}>
           <option value="default">Default</option>
           <option value="asc">Ascending</option>
           <option value="desc">Descending</option>
