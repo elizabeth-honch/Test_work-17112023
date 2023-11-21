@@ -1,0 +1,37 @@
+.albums {
+  &__title {
+    text-align: center;
+    color: #52c41a;
+  }
+
+  &__btn {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    line-height: 30px;
+    height: 30px;
+    background: #b3b3b3;
+    color: white;
+    border: #b3b3b3;
+    padding: 0 5px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #fff;
+    transition: all 0.5s;
+
+    &:hover, &:active, &:focus {
+      background-color: #999797;
+      border: #999797;
+    }
+  }
+
+  &__item {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #52c41a;
+  }
+
+  &__text {
+    font-weight: 600;
+  }
+}
